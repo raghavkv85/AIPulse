@@ -1,0 +1,29 @@
+name: AI Newsletter Pipeline
+
+on:
+  schedule:
+    # 6 AM CST = 12:00 UTC (CST is UTC-6)
+    # Runs Monday and Friday
+    - cron: '0 12 * * 1,5'
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  send-newsletter:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run newsletter pipeline
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+        run: npx tsx src/cli.ts run-pipeline

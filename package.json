@@ -1,0 +1,32 @@
+{
+  "name": "ai-newsletter",
+  "version": "1.0.0",
+  "description": "Automated AI newsletter system that curates and delivers twice-weekly digests for builders",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npx tsx src/index.ts",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "test:unit": "vitest --run tests/ai-newsletter/unit/",
+    "test:property": "vitest --run tests/ai-newsletter/property/",
+    "cli": "npx tsx src/cli.ts"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "cheerio": "^1.0.0",
+    "node-cron": "^3.0.3",
+    "resend": "^4.1.0",
+    "rss-parser": "^3.13.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/uuid": "^10.0.0",
+    "fast-check": "^3.15.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}
