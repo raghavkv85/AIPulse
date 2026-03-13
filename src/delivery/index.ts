@@ -135,16 +135,24 @@ export class DeliveryEngineImpl implements DeliveryEngine {
       archiveUrl: null,
     });
 
-    // Store curated articles in DB
+    // Store curated articles in DB (skip FK failures gracefully)
     for (const section of digest.sections) {
       for (const article of section.articles) {
-        this.curatedArticleRepo.create(article, digest.id);
+        try {
+          this.curatedArticleRepo.create(article, digest.id);
+        } catch (err) {
+          console.warn(`[delivery] Failed to store curated article ${article.id}: ${err instanceof Error ? err.message : err}`);
+        }
       }
     }
 
-    // Store tool radar entries in DB
+    // Store tool radar entries in DB (skip FK failures gracefully)
     for (const entry of digest.toolRadar) {
-      this.toolRadarRepo.create(entry, digest.id);
+      try {
+        this.toolRadarRepo.create(entry, digest.id);
+      } catch (err) {
+        console.warn(`[delivery] Failed to store tool radar entry ${entry.id}: ${err instanceof Error ? err.message : err}`);
+      }
     }
 
     // Archive (placeholder)

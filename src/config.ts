@@ -198,12 +198,10 @@ function getDefaultLLMConfig(): LLMConfig {
 function getDefaultSources(): Source[] {
   return [
     // Anthropic / Claude
-    { id: 'anthropic-blog', name: 'Anthropic Blog', url: 'https://www.anthropic.com/rss.xml', type: 'rss', categories: ['anthropic-claude'], enabled: true },
-    { id: 'anthropic-news', name: 'Anthropic News', url: 'https://www.anthropic.com/news/rss.xml', type: 'rss', categories: ['anthropic-claude'], enabled: true },
+    { id: 'anthropic-blog', name: 'Anthropic Blog', url: 'https://www.anthropic.com/news', type: 'scrape', categories: ['anthropic-claude'], enabled: true },
 
     // OpenAI
     { id: 'openai-blog', name: 'OpenAI Blog', url: 'https://openai.com/blog/rss.xml', type: 'rss', categories: ['openai'], enabled: true },
-    { id: 'openai-news', name: 'OpenAI News', url: 'https://openai.com/index/rss.xml', type: 'rss', categories: ['openai'], enabled: true },
 
     // Google AI
     { id: 'google-ai-blog', name: 'Google AI Blog', url: 'https://blog.google/technology/ai/rss/', type: 'rss', categories: ['google'], enabled: true },
