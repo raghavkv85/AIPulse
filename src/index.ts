@@ -164,11 +164,16 @@ async function runPipeline(): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
-// 6. Create and start the scheduler
+// 6. Create the scheduler (only start if running directly, not via CLI)
 // ---------------------------------------------------------------------------
 const scheduler = new NewsletterScheduler(config.schedule, runPipeline);
-scheduler.start();
-console.log('[init] Scheduler started');
+
+// Only auto-start the scheduler when running index.ts directly (not imported by CLI)
+const isDirectRun = process.argv[1]?.endsWith('index.ts') || process.argv[1]?.endsWith('index.js');
+if (isDirectRun) {
+  scheduler.start();
+  console.log('[init] Scheduler started');
+}
 
 // ---------------------------------------------------------------------------
 // 7. Export key instances for CLI / external use
