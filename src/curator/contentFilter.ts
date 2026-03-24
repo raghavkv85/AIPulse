@@ -65,12 +65,20 @@ async function classifyBatch(
     return `[${idx}] Title: ${a.title}\nContent: ${snippet}`;
   }).join('\n\n');
 
-  const prompt = `You are a content filter for a developer-focused AI newsletter targeting solo founders, product managers, and vibe coders.
+  const prompt = `You are a strict content filter for a developer-focused AI newsletter targeting solo founders, product managers, and vibe coders. The newsletter is ONLY about technical AI content that builders can act on.
 
 Classify each article below as "include" or "exclude" based on these criteria:
 
-INCLUDE if the article is about: ${criteria.include.join(', ')}
-EXCLUDE if the article is about: ${criteria.exclude.join(', ')}
+INCLUDE if the article is primarily about technical AI topics such as: ${criteria.include.join(', ')}
+
+EXCLUDE if the article is primarily about ANY of the following non-technical topics: ${criteria.exclude.join(', ')}
+
+IMPORTANT FILTERING RULES:
+- Articles about AI laws, regulations, legislation, government policy, or legal disputes should ALWAYS be excluded, even if they mention AI companies or models.
+- Articles about geographic/territorial aspects of AI (country bans, trade restrictions, geopolitical competition) should ALWAYS be excluded.
+- Articles about lawsuits, copyright disputes, or court rulings involving AI companies should ALWAYS be excluded.
+- Articles about corporate financials (earnings, stock, IPO, funding) should ALWAYS be excluded unless they announce a specific new technical product or API.
+- When in doubt, EXCLUDE. Only include articles that provide actionable technical information for builders.
 
 Articles:
 ${articleSummaries}

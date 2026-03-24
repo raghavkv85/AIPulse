@@ -186,4 +186,77 @@ describe('filterWithKeywords', () => {
     const result = filterWithKeywords([], defaultCriteria);
     expect(result).toHaveLength(0);
   });
+
+  it('excludes articles about legislation and legal topics', () => {
+    const legalCriteria: ContentFilterCriteria = {
+      include: ['API', 'SDK', 'model', 'AI', 'launch'],
+      exclude: [
+        'legislation', 'lawsuit', 'litigation', 'court ruling',
+        'legal battle', 'regulation', 'compliance', 'antitrust',
+        'congressional', 'executive order', 'privacy law', 'GDPR',
+        'AI act', 'copyright dispute',
+      ],
+    };
+
+    const articles = [
+      makeArticle({ id: 'legal-1', title: 'EU AI Act sets new compliance rules for model providers', rawContent: 'The AI act imposes new requirements.' }),
+      makeArticle({ id: 'legal-2', title: 'OpenAI faces copyright dispute from authors', rawContent: 'A copyright dispute has been filed.' }),
+      makeArticle({ id: 'legal-3', title: 'Congress holds hearing on AI regulation', rawContent: 'Congressional hearings on AI regulation begin.' }),
+      makeArticle({ id: 'tech-1', title: 'OpenAI launches GPT-5 API', rawContent: 'New API with improved model performance.' }),
+    ];
+
+    const result = filterWithKeywords(articles, legalCriteria);
+    const ids = result.map(a => a.id);
+
+    expect(ids).not.toContain('legal-1');
+    expect(ids).not.toContain('legal-2');
+    expect(ids).not.toContain('legal-3');
+    expect(ids).toContain('tech-1');
+  });
+
+  it('excludes articles about geographic and geopolitical topics', () => {
+    const geoCriteria: ContentFilterCriteria = {
+      include: ['API', 'SDK', 'model', 'AI', 'launch'],
+      exclude: [
+        'geopolitical', 'trade war', 'tariff', 'sanctions',
+        'government ban', 'national security review',
+      ],
+    };
+
+    const articles = [
+      makeArticle({ id: 'geo-1', title: 'US-China trade war impacts AI chip exports', rawContent: 'The trade war escalates with new tariff on chips.' }),
+      makeArticle({ id: 'geo-2', title: 'Government ban on AI tools in federal agencies', rawContent: 'A government ban has been issued.' }),
+      makeArticle({ id: 'tech-1', title: 'New Claude model launch with improved API', rawContent: 'Anthropic launches a new model.' }),
+    ];
+
+    const result = filterWithKeywords(articles, geoCriteria);
+    const ids = result.map(a => a.id);
+
+    expect(ids).not.toContain('geo-1');
+    expect(ids).not.toContain('geo-2');
+    expect(ids).toContain('tech-1');
+  });
+
+  it('excludes articles about financial/corporate topics', () => {
+    const finCriteria: ContentFilterCriteria = {
+      include: ['API', 'SDK', 'model', 'AI', 'launch'],
+      exclude: [
+        'stock price', 'IPO', 'market cap', 'earnings report',
+        'acquisition rumor', 'labor dispute',
+      ],
+    };
+
+    const articles = [
+      makeArticle({ id: 'fin-1', title: 'AI startup IPO values company at $10B', rawContent: 'The IPO is expected next month.' }),
+      makeArticle({ id: 'fin-2', title: 'Google earnings report shows AI revenue growth', rawContent: 'Quarterly earnings report released.' }),
+      makeArticle({ id: 'tech-1', title: 'New SDK for building AI agents', rawContent: 'SDK launch for agent development.' }),
+    ];
+
+    const result = filterWithKeywords(articles, finCriteria);
+    const ids = result.map(a => a.id);
+
+    expect(ids).not.toContain('fin-1');
+    expect(ids).not.toContain('fin-2');
+    expect(ids).toContain('tech-1');
+  });
 });
