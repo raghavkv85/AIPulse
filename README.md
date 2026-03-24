@@ -87,6 +87,25 @@ npx tsx src/cli.ts list-archive
 
 Source types: `rss`, `atom`, `scrape`, `tool-radar`
 
+## Adding a Subscriber
+
+To manually add an email address to the newsletter:
+
+```bash
+npx tsx src/cli.ts add-subscriber user@example.com
+```
+
+This creates a subscriber with `pending` status and sends a confirmation email via Resend. The subscriber must click the confirmation link to start receiving newsletters. Once confirmed, their status changes to `active`.
+
+To view or remove existing subscribers:
+
+```bash
+npx tsx src/cli.ts list-subscribers
+npx tsx src/cli.ts remove-subscriber <id>
+```
+
+A default subscriber is seeded automatically on first run (configured in `src/config.ts`).
+
 ## GitHub Actions
 
 The included workflow (`.github/workflows/newsletter.yml`) runs the pipeline on a cron schedule (Monday & Friday at 12:00 UTC). It can also be triggered manually via `workflow_dispatch`.
