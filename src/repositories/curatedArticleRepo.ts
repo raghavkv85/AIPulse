@@ -43,6 +43,7 @@ export class CuratedArticleRepo {
     update: Database.Statement;
     deleteById: Database.Statement;
     assignToDigest: Database.Statement;
+    getSentArticleUrls: Database.Statement;
   };
 
   constructor(private db: Database.Database) {
@@ -61,6 +62,7 @@ export class CuratedArticleRepo {
       `),
       deleteById: db.prepare('DELETE FROM curated_articles WHERE id = ?'),
       assignToDigest: db.prepare('UPDATE curated_articles SET digest_id = @digest_id WHERE id = @id'),
+      getSentArticleUrls: db.prepare('SELECT DISTINCT url FROM curated_articles WHERE digest_id IS NOT NULL'),
     };
   }
 
@@ -118,5 +120,10 @@ export class CuratedArticleRepo {
 
   assignToDigest(id: string, digestId: string): void {
     this.stmts.assignToDigest.run({ id, digest_id: digestId });
+  }
+
+  getSentArticleUrls(): Set<string> {
+    const rows = this.stmts.getSentArticleUrls.all() as { url: string }[];
+    return new Set(rows.map((r) => r.url));
   }
 }

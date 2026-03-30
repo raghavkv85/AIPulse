@@ -129,9 +129,14 @@ async function runPipeline(): Promise<void> {
     ? lastDigest.publishedAt
     : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-  // c. Get articles since last digest
-  const rawArticles = articleRepo.getByDateRange(periodStart, new Date());
-  console.log(`[pipeline] ${rawArticles.length} articles since last digest`);
+  // c. Get articles since last digest, excluding already-sent ones
+  const allRawArticles = articleRepo.getByDateRange(periodStart, new Date());
+  const sentUrls = curatedArticleRepo.getSentArticleUrls();
+  const rawArticles = allRawArticles.filter((a) => !sentUrls.has(a.url));
+  console.log(
+    `[pipeline] ${allRawArticles.length} articles since last digest, ` +
+    `${allRawArticles.length - rawArticles.length} already sent, ${rawArticles.length} new`,
+  );
 
   if (rawArticles.length === 0) {
     console.log('[pipeline] No new articles available — skipping this edition');
