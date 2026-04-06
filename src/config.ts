@@ -328,11 +328,21 @@ function getDefaultSources(): Source[] {
     { id: 'aws-ml-blog', name: 'AWS ML Blog', url: 'https://aws.amazon.com/blogs/machine-learning/feed/', type: 'rss', categories: ['aws'], enabled: true },
     { id: 'aws-news', name: 'AWS News', url: 'https://aws.amazon.com/blogs/aws/feed/', type: 'rss', categories: ['aws'], enabled: true },
 
+    // Meta AI
+    { id: 'meta-ai-blog', name: 'Meta AI Blog', url: 'https://ai.meta.com/blog/rss/', type: 'rss', categories: ['meta-ai'], enabled: true },
+
     // Builder Tools & Open Source
     { id: 'huggingface-blog', name: 'Hugging Face Blog', url: 'https://huggingface.co/blog/feed.xml', type: 'rss', categories: ['builder-tools-oss'], enabled: true },
     { id: 'the-verge-ai', name: 'The Verge AI', url: 'https://www.theverge.com/rss/ai-artificial-intelligence/index.xml', type: 'rss', categories: ['builder-tools-oss'], enabled: true },
     { id: 'techcrunch-ai', name: 'TechCrunch AI', url: 'https://techcrunch.com/category/artificial-intelligence/feed/', type: 'rss', categories: ['builder-tools-oss'], enabled: true },
     { id: 'ars-ai', name: 'Ars Technica AI', url: 'https://feeds.arstechnica.com/arstechnica/technology-lab', type: 'rss', categories: ['builder-tools-oss'], enabled: true },
+
+    // Dynamic discovery — broad AI news sources that catch launches from any company
+    { id: 'google-news-ai', name: 'Google News AI', url: 'https://news.google.com/rss/topics/CAAqIQgKIhtDQkFTRGdvSUwyMHZNRFZ4ZERBU0FoSmxiaWdBUAE?hl=en-US&gl=US&ceid=US:en', type: 'rss', categories: [], enabled: true },
+    { id: 'reddit-machinelearning', name: 'Reddit r/MachineLearning', url: 'https://www.reddit.com/r/MachineLearning/top/.rss?t=week', type: 'rss', categories: ['builder-tools-oss'], enabled: true },
+    { id: 'reddit-localllama', name: 'Reddit r/LocalLLaMA', url: 'https://www.reddit.com/r/LocalLLaMA/top/.rss?t=week', type: 'rss', categories: ['builder-tools-oss'], enabled: true },
+    { id: 'bensbites', name: "Ben's Bites", url: 'https://bensbites.beehiiv.com/feed', type: 'rss', categories: [], enabled: true },
+    { id: 'latent-space', name: 'Latent Space Podcast', url: 'https://www.latent.space/feed', type: 'rss', categories: [], enabled: true },
   ];
 }
 

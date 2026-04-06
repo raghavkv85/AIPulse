@@ -18,6 +18,7 @@ import { deduplicate } from './deduplicator';
 import { rankArticles, RankedArticle } from './ranker';
 import { generateArticleTreatment } from './treatmentGenerator';
 import { selectToolRadar } from './toolRadarSelector';
+import { callLLM } from './llmClient';
 
 export class ContentCuratorImpl implements ContentCurator {
   private llmConfig: LLMConfig;
@@ -60,7 +61,7 @@ export class ContentCuratorImpl implements ContentCurator {
     const enabledCategories = this.coverageCategories.filter(
       c => c.enabled && categories.includes(c.id)
     );
-    const categorizedArticles = this.assignCategories(deduped, enabledCategories);
+    const categorizedArticles = await this.assignCategories(deduped, enabledCategories);
 
     const allRanked: RankedArticle[] = [];
     for (const cat of enabledCategories) {
@@ -162,11 +163,110 @@ export class ContentCuratorImpl implements ContentCurator {
   }
 
   /**
-   * Assign articles to categories based on CoverageCategory keywords
-   * matching article title and content.
-   * An article can be assigned to at most one category (best match).
+   * Assign articles to categories using LLM classification with keyword fallback.
+   * The LLM understands context — e.g. "Gemma 4" belongs to Google even without
+   * the word "google" appearing in the article.
    */
-  private assignCategories(
+  private async assignCategories(
+    articles: RawArticle[],
+    categories: CoverageCategory[]
+  ): Promise<Map<string, RawArticle[]>> {
+    try {
+      return await this.assignCategoriesWithLLM(articles, categories);
+    } catch (error) {
+      console.warn(
+        `LLM categorization failed, falling back to keyword matching: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+      return this.assignCategoriesWithKeywords(articles, categories);
+    }
+  }
+
+  private async assignCategoriesWithLLM(
+    articles: RawArticle[],
+    categories: CoverageCategory[]
+  ): Promise<Map<string, RawArticle[]>> {
+    const result = new Map<string, RawArticle[]>();
+    for (const cat of categories) {
+      result.set(cat.id, []);
+    }
+
+    const BATCH_SIZE = 20;
+    for (let i = 0; i < articles.length; i += BATCH_SIZE) {
+      const batch = articles.slice(i, i + BATCH_SIZE);
+      const assignments = await this.classifyCategoryBatch(batch, categories);
+      for (let j = 0; j < batch.length; j++) {
+        const catId = assignments[j];
+        if (catId && result.has(catId)) {
+          result.get(catId)!.push(batch[j]);
+        }
+      }
+    }
+
+    return result;
+  }
+
+  private async classifyCategoryBatch(
+    articles: RawArticle[],
+    categories: CoverageCategory[]
+  ): Promise<(string | null)[]> {
+    const categoryDescriptions = categories
+      .map(c => `"${c.id}" — ${c.name} (e.g. ${c.keywords.slice(0, 5).join(', ')})`)
+      .join('\n');
+
+    const articleSummaries = articles.map((a, idx) => {
+      const snippet = a.rawContent.substring(0, 300);
+      return `[${idx}] Title: ${a.title}\nContent: ${snippet}`;
+    }).join('\n\n');
+
+    const prompt = `You are categorizing articles for an AI newsletter. Assign each article to the single best-matching category based on what the article is actually about, not just keyword matching.
+
+Available categories:
+${categoryDescriptions}
+
+Use your knowledge of the AI ecosystem. For example:
+- "Gemma 4" is a Google model → category "google"
+- "Llama 4" is a Meta model → category "meta-ai"
+- "GPT-5" is an OpenAI model → category "openai"
+- "Kiro" is an AWS AI IDE → category "aws"
+- A new open-source tool → category "builder-tools-oss"
+
+If an article doesn't clearly fit any category, respond with "none" for that article.
+
+Articles:
+${articleSummaries}
+
+Respond with ONLY a JSON array of category IDs (or "none"), one per article, in order.
+Example: ["google", "openai", "none", "builder-tools-oss"]`;
+
+    const response = await callLLM(this.llmConfig, {
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0,
+      maxTokens: 512,
+    });
+
+    const jsonMatch = response.match(/\[[\s\S]*?\]/);
+    if (!jsonMatch) {
+      throw new Error('Could not parse LLM category response as JSON array');
+    }
+
+    const parsed = JSON.parse(jsonMatch[0]) as string[];
+    const validIds = new Set(categories.map(c => c.id));
+
+    return articles.map((_, idx) => {
+      const catId = parsed[idx]?.toLowerCase().trim();
+      if (!catId || catId === 'none' || !validIds.has(catId)) {
+        return null;
+      }
+      return catId;
+    });
+  }
+
+  /**
+   * Keyword-based fallback for category assignment.
+   */
+  private assignCategoriesWithKeywords(
     articles: RawArticle[],
     categories: CoverageCategory[]
   ): Map<string, RawArticle[]> {
