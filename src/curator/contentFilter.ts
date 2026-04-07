@@ -67,18 +67,30 @@ async function classifyBatch(
 
   const prompt = `You are a strict content filter for a developer-focused AI newsletter targeting solo founders, product managers, and vibe coders. The newsletter is ONLY about technical AI content that builders can act on.
 
-Classify each article below as "include" or "exclude" based on these criteria:
+Classify each article below as "include" or "exclude".
 
-INCLUDE if the article is primarily about technical AI topics such as: ${criteria.include.join(', ')}
+INCLUDE articles that are about:
+- New model releases/launches (e.g. GPT-5, Gemma 4, Claude 4, Llama 4, Mistral Large)
+- New APIs, SDKs, developer tools, or frameworks
+- Technical benchmarks, architecture details, or research breakthroughs with practical implications
+- Pricing changes, rate limits, or infrastructure updates
+- Open-source model releases, weights, fine-tuning techniques
+- New capabilities: function calling, multimodal, code generation, agents, MCP
+- Topics matching: ${criteria.include.join(', ')}
 
-EXCLUDE if the article is primarily about ANY of the following non-technical topics: ${criteria.exclude.join(', ')}
+ALWAYS EXCLUDE articles that are about:
+- ${criteria.exclude.join(', ')}
+- Opinion pieces, editorials, or think-pieces about AI's impact on society
+- AI company profiles, hiring news, or executive changes
+- Listicles like "top 10 AI tools" without new technical substance
+- Product reviews or consumer app updates (e.g. "ChatGPT gets a new UI")
+- General news that merely mentions AI in passing
 
-IMPORTANT FILTERING RULES:
-- Articles about AI laws, regulations, legislation, government policy, or legal disputes should ALWAYS be excluded, even if they mention AI companies or models.
-- Articles about geographic/territorial aspects of AI (country bans, trade restrictions, geopolitical competition) should ALWAYS be excluded.
-- Articles about lawsuits, copyright disputes, or court rulings involving AI companies should ALWAYS be excluded.
-- Articles about corporate financials (earnings, stock, IPO, funding) should ALWAYS be excluded unless they announce a specific new technical product or API.
-- When in doubt, EXCLUDE. Only include articles that provide actionable technical information for builders.
+CRITICAL RULES:
+- A new model launch (Gemma 4, GPT-5, etc.) should ALWAYS be included — these are the most important stories.
+- Articles about AI laws, regulations, legislation, lawsuits, or government policy should ALWAYS be excluded.
+- Articles about geographic/trade restrictions, geopolitics, or corporate financials should ALWAYS be excluded.
+- If an article is borderline, ask: "Can a developer act on this today?" If no, EXCLUDE.
 
 Articles:
 ${articleSummaries}
