@@ -44,26 +44,6 @@ Every article that passes curation gets a 3-layer treatment:
 | Meta AI | llama, codellama |
 | Builder Tools & OSS | cursor, copilot, windsurf, kiro, antigravity, deepseek, mistral, grok, langchain, ollama, huggingface, and 30+ more |
 
-## Sources
-
-### Company blogs (static)
-- Anthropic Blog, OpenAI Blog, Google AI Blog, DeepMind Blog, Meta AI Blog
-- AWS ML Blog, AWS News
-- Hugging Face Blog
-
-### News & media
-- The Verge AI, TechCrunch AI, Ars Technica AI
-
-### Dynamic discovery (catches news from any company)
-- Google News AI topic feed
-- Reddit r/MachineLearning (weekly top)
-- Reddit r/LocalLLaMA (weekly top)
-- Ben's Bites newsletter
-- Latent Space podcast/blog
-
-### Tool radar
-- Hacker News (trending tools & launches)
-
 ## Setup
 
 ```bash
@@ -163,24 +143,6 @@ npm run test:watch
 - **rss-parser** + **cheerio** — feed parsing and web scraping
 - **node-cron** — scheduling
 - **vitest** — testing
-
-## Project Structure
-
-```
-src/
-├── index.ts              # Entry point & pipeline orchestration
-├── cli.ts                # CLI for manual operations
-├── config.ts             # Configuration & defaults
-├── types.ts              # TypeScript type definitions
-├── database.ts           # SQLite setup
-├── aggregator/           # Content fetching (RSS, scrape, HN, Reddit)
-├── curator/              # LLM filter, LLM categorize, dedupe, rank, treatments
-├── delivery/             # HTML/text rendering, email sending
-├── scheduler/            # Cron scheduling
-├── archive/              # Digest archival
-├── repositories/         # Data access layer
-└── config/               # Runtime category management
-```
 
 ## License
 
