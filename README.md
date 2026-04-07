@@ -5,35 +5,64 @@ Automated AI newsletter system that curates and delivers twice-weekly digests fo
 ## How It Works
 
 ```
-Content Sources (RSS / Atom / Scrape / Hacker News)
+15+ Sources (RSS / Scrape / Reddit / Google News / Hacker News)
         ↓
-   Aggregator  →  Fetch & parse articles
+   Aggregator  →  Fetch & parse articles from dynamic + static sources
         ↓
-     Curator   →  Filter → Dedupe → Rank → Generate treatments
+     Curator   →  LLM Filter → Dedupe → LLM Categorize → Rank → Generate treatments
         ↓
     Delivery   →  Render HTML/text → Send emails via Resend
         ↓
      Archive   →  Store digests as HTML files
 ```
 
-The curator uses LLM-based classification (with keyword fallback) to keep content strictly technical — legal, regulatory, geopolitical, and financial articles are filtered out automatically.
+### Smart Curation (not just keywords)
+
+The system uses **LLM-based intelligence** at two critical stages:
+
+1. **Content filtering** — The LLM classifies each article as include/exclude based on whether it's actionable technical content. Opinion pieces, regulatory news, lawsuits, and corporate financials are filtered out automatically.
+
+2. **Category assignment** — Instead of keyword matching, the LLM uses its knowledge of the AI ecosystem to categorize articles. "Gemma 4" gets categorized under Google without needing the word "google" in the article. "Kiro" maps to AWS. "Llama 4" maps to Meta.
+
+Both stages fall back to keyword-based heuristics if the LLM is unavailable.
+
+### Article Treatment
+
+Every article that passes curation gets a 3-layer treatment:
+- **Summary** — 2-3 sentence factual description
+- **Why It Matters** — implications for builders and product development
+- **What You Can Build** — 3-4 concrete, actionable use cases
 
 ## Coverage Categories
 
-| Category | Keywords |
+| Category | Examples |
 |----------|----------|
-| Anthropic/Claude | anthropic, claude, sonnet, opus, haiku |
-| OpenAI | openai, gpt, chatgpt, dall-e, sora, o1, o3 |
-| Google | google, gemini, deepmind, bard, vertex |
-| AWS | aws, amazon, bedrock, sagemaker, titan |
-| Builder Tools & OSS | framework, sdk, langchain, llamaindex, huggingface, ollama, vllm |
+| Anthropic/Claude | claude, sonnet, opus, haiku, claude code |
+| OpenAI | gpt, chatgpt, dall-e, sora, o1, o3, o4, codex, whisper |
+| Google | gemini, gemma, deepmind, vertex, veo, imagen |
+| AWS | bedrock, sagemaker, titan, amazon q |
+| Meta AI | llama, codellama |
+| Builder Tools & OSS | cursor, copilot, windsurf, kiro, antigravity, deepseek, mistral, grok, langchain, ollama, huggingface, and 30+ more |
 
-## Default Sources
+## Sources
 
-- Anthropic Blog, OpenAI Blog, Google AI Blog, DeepMind Blog
+### Company blogs (static)
+- Anthropic Blog, OpenAI Blog, Google AI Blog, DeepMind Blog, Meta AI Blog
 - AWS ML Blog, AWS News
-- Hugging Face Blog, The Verge AI, TechCrunch AI, Ars Technica AI
-- Hacker News (Tool Radar)
+- Hugging Face Blog
+
+### News & media
+- The Verge AI, TechCrunch AI, Ars Technica AI
+
+### Dynamic discovery (catches news from any company)
+- Google News AI topic feed
+- Reddit r/MachineLearning (weekly top)
+- Reddit r/LocalLLaMA (weekly top)
+- Ben's Bites newsletter
+- Latent Space podcast/blog
+
+### Tool radar
+- Hacker News (trending tools & launches)
 
 ## Setup
 
@@ -130,7 +159,7 @@ npm run test:watch
 - **TypeScript** + Node.js
 - **SQLite** (better-sqlite3) — article storage, subscriber management, delivery logs
 - **Resend** — email delivery
-- **Groq / Anthropic / OpenAI** — LLM-based content curation
+- **Groq / Anthropic / OpenAI** — LLM-based content curation and categorization
 - **rss-parser** + **cheerio** — feed parsing and web scraping
 - **node-cron** — scheduling
 - **vitest** — testing
@@ -144,8 +173,8 @@ src/
 ├── config.ts             # Configuration & defaults
 ├── types.ts              # TypeScript type definitions
 ├── database.ts           # SQLite setup
-├── aggregator/           # Content fetching (RSS, scrape, HN)
-├── curator/              # Filter, dedupe, rank, treatments, tool radar
+├── aggregator/           # Content fetching (RSS, scrape, HN, Reddit)
+├── curator/              # LLM filter, LLM categorize, dedupe, rank, treatments
 ├── delivery/             # HTML/text rendering, email sending
 ├── scheduler/            # Cron scheduling
 ├── archive/              # Digest archival
