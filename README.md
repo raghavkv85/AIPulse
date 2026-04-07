@@ -1,6 +1,6 @@
 # AI Pulse
 
-Automated AI newsletter system that curates and delivers twice-weekly digests for builders — solo founders, product managers, and vibe coders.
+Automated AI newsletter system that curates and delivers twice-weekly digests for builders, solo founders, product managers, and vibe coders.
 
 ## How It Works
 
@@ -28,8 +28,7 @@ Both stages fall back to keyword-based heuristics if the LLM is unavailable.
 
 ### Article Treatment
 
-Every article that passes curation gets a 3-layer treatment:
-- **Summary** — 2-3 sentence factual description
+Every article that passes curation gets a 2-layer treatment:
 - **Why It Matters** — implications for builders and product development
 - **What You Can Build** — 3-4 concrete, actionable use cases
 
